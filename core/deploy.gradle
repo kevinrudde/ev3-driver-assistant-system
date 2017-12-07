@@ -1,0 +1,69 @@
+
+task testConnection << {
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "ls "
+            execute "ls "
+        }
+    }
+}
+
+task deploy << {
+    ssh.settings {
+        knownHosts = allowAnyHosts
+    }
+    ssh.run {
+        session(remotes.ev3dev) {
+            put from: "./build/libs/" + "core" + "-all-" + version + ".jar", into: "/home/robot/"
+        }
+    }
+}
+deploy.dependsOn clean, fatJar
+
+task remoteRun << {
+    ssh.settings {
+        knownHosts = allowAnyHosts
+    }
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "java -server -jar /home/robot/" + "core" + "-all-" + version + ".jar "
+            execute "java -server -jar /home/robot/" + "core" + "-all-" + version + ".jar "
+        }
+    }
+}
+
+task remoteSudoRun << {
+    ssh.settings {
+        knownHosts = allowAnyHosts
+    }
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "echo -e \"maker\" | sudo -S java -server -jar /home/robot/" + "core" + "-" + version + "-all" + ".jar"
+            execute "echo -e \"maker\" | sudo -S java -server -jar /home/robot/" + "core" + "-" + version + "-all" + ".jar"
+        }
+    }
+}
+
+task remoteProfilingRun << {
+    ssh.settings {
+        knownHosts = allowAnyHosts
+    }
+    ssh.run {
+        session(remotes.ev3dev) {
+            println "java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -server -jar /home/robot/" + "core" + "-all-" + version + ".jar "
+            execute "java -Dcom.sun.management.jmxremote=true -Dcom.sun.management.jmxremote.port=7091 -Dcom.sun.management.jmxremote.authenticate=false -Dcom.sun.management.jmxremote.ssl=false -server -jar /home/robot/" + "core" + "-all-" + version + ".jar "
+        }
+    }
+}
+
+task deployAndRun << {
+
+}
+deployAndRun.dependsOn deploy, remoteRun
+
+task deployAndProfilingRun << {
+
+}
+deployAndProfilingRun.dependsOn deploy, remoteProfilingRun
+
+apply from: 'config.gradle'

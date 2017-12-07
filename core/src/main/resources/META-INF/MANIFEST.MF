@@ -1,0 +1,7 @@
+Manifest-Version: 1.0
+Implementation-Title: DriverAssistentSystems
+Implementation-Version: 0.0.1
+Implementation-Vendor: Kevin Uwe Jan Marvin Malte
+Main-Class: project.core.Core
+
+

@@ -1,0 +1,28 @@
+apply plugin : 'java'
+apply plugin : 'application'
+
+version = '0.0.1'
+
+repositories {
+    mavenCentral()
+    maven { url "https://jitpack.io" }
+}
+
+dependencies {
+    compile project(':protocol')
+    compile 'com.google.code.gson:gson:2.8.2'
+    compile 'com.beust:jcommander:1.72'
+    compile 'org.jline:jline:3.5.1'
+    compile 'com.github.WilliamAHartman:Jamepad:1.1'
+}
+
+task fatJar(type: Jar) {
+    manifest {
+        attributes 'Implementation-Title': 'EV3 Controller',
+                'Implementation-Version': version,
+                'Main-Class': 'project.controller.Controller'
+    }
+    baseName = project.name + '-all'
+    from { configurations.compile.collect { it.isDirectory() ? it : zipTree(it) } }
+    with jar
+}
