@@ -13,9 +13,15 @@ public class ControllerHandler extends Thread {
 
     private ControllerManager controllers;
 
+    private boolean drivingStop;
+    private boolean steeringStop;
+
     public ControllerHandler() {
         this.controllers = new ControllerManager();
         controllers.initSDLGamepad();
+
+        this.drivingStop = true;
+        this.steeringStop = true;
     }
 
     @Override
@@ -28,36 +34,51 @@ public class ControllerHandler extends Thread {
                 continue;
             }
 
-            if (state.rightTrigger >= 0.2) {
+            if (state.rightTrigger == 0 && drivingStop) {
+                drivingStop = false;
+                packet = new PacketCommandInput(PacketCommandInput.Action.DRIVING_STOP, 39);
+                CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
+
+            } else if (state.rightTrigger >= 0.2) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.FORWARD, state.rightTrigger);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-            }
+                drivingStop = true;
 
-            if (state.leftTrigger >= 0.2) {
+            } else if (state.leftTrigger == 0 && drivingStop) {
+                drivingStop = false;
+                packet = new PacketCommandInput(PacketCommandInput.Action.DRIVING_STOP, 49);
+                CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
+
+            } else if (state.leftTrigger >= 0.2) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.BACKWARDS, state.leftTrigger);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-            }
+                drivingStop = true;
 
-            if (state.leftStickX >= 0.35) {
+            } else if ((state.leftStickX > -0.35 || state.leftStickX < 0.35) && steeringStop) {
+                steeringStop = false;
+                packet = new PacketCommandInput(PacketCommandInput.Action.STEERING_STOP, 59);
+                CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
+
+            } else if (state.leftStickX >= 0.35) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.RIGHT, state.leftStickX);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-            }
+                steeringStop = true;
 
-            if (state.leftStickX <= -0.35) {
+            } else if (state.leftStickX <= -0.35) {
                 float extra = state.leftStickX * (-1);
                 if (extra > 1) extra = 1;
 
                 packet = new PacketCommandInput(PacketCommandInput.Action.LEFT, extra);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-            }
+                steeringStop = true;
 
-            if (state.rb) {
+            } else if (state.rb) {
                 packet = new PacketSoundBeep();
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
             }
 
             try {
-                Thread.sleep(100);
+                Thread.sleep(400);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

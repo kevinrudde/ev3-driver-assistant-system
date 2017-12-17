@@ -33,6 +33,8 @@ public class PacketCommandInput extends Packet {
         BACKWARDS,
         RIGHT,
         LEFT,
+        DRIVING_STOP,
+        STEERING_STOP,
         TEMPOMAT
     }
 }

@@ -22,7 +22,7 @@ public class Client {
                 new CommandInputListener()
         );
 
-        connect("192.168.2.105", 8081, "ev3"); // Home
+        connect("10.3.141.140", 8081, "ev3"); // Home
         //connect("192.168.2.105", 8081, "ev3"); // Raspberry Router
         //connect("127.0.0.1", 8081, "ev3"); // Localhost
     }

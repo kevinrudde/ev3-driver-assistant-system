@@ -53,7 +53,13 @@ public class Core {
 
         this.steeringMotor = new EV3MediumRegulatedMotor(MotorPort.A);
         steeringMotor.setSpeed(25);
-        //this.drivingMotor = new EV3MediumRegulatedMotor(MotorPort.A);
+        this.drivingMotor = new EV3MediumRegulatedMotor(MotorPort.B);
+        drivingMotor.setSpeed(200);
+
+        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+            this.steeringMotor.stop();
+            this.drivingMotor.stop();
+        }));
 
         while (running) {
             LCDWriter.writeMessage("Driver Assistance System", 32, 10, 0);

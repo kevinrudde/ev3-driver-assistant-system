@@ -1,7 +1,7 @@
 
 remotes {
     ev3dev {
-        host = '192.168.2.119'
+        host = '10.3.141.74'
         user = 'robot'
         password = 'maker'
     }

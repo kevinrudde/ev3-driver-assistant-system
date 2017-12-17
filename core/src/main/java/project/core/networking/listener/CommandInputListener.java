@@ -16,18 +16,25 @@ public class CommandInputListener extends PacketListener {
     public void onCommand(ChannelHandlerContext ctx, PacketCommandInput packet) {
         System.out.println("Action: " + packet.getAction().toString() + " / " + packet.getExtra() + " moving: " + Core.getInstance().getSteeringMotor().isMoving());
 
+        if (packet.getAction() == PacketCommandInput.Action.DRIVING_STOP) {
+            Core.getInstance().getDrivingMotor().stop();
+            return;
+        }
+        if (packet.getAction() == PacketCommandInput.Action.STEERING_STOP) {
+            Core.getInstance().getSteeringMotor().stop();
+            return;
+        }
+
         if (!Core.getInstance().getSteeringMotor().isMoving()) {
             if (packet.getAction() == PacketCommandInput.Action.LEFT) {
                 float value = packet.getExtra() * 100f;
 
                 float turnDegree = TURN_RATIO * value;
 
-                System.out.println(turnDegree);
-
                 int turn = Math.round(turnDegree) * (-1);
 
-                System.out.println(turn + " degree");
-                System.out.println();
+                float position = Core.getInstance().getSteeringMotor().getPosition();
+                System.out.println("Pos:" + position + " / Turn: " + turn);
 
                 Core.getInstance().getExecutor().execute(() -> Core.getInstance().getSteeringMotor().rotate(turn));
             }
@@ -37,13 +44,13 @@ public class CommandInputListener extends PacketListener {
                 float turnDegree = TURN_RATIO * value;
                 int turn = Math.round(turnDegree);
 
-                System.out.println(turn + " degree");
-                System.out.println();
+                float position = Core.getInstance().getSteeringMotor().getPosition();
+                System.out.println("Pos:" + position + " / Turn: " + turn);
 
                 Core.getInstance().getExecutor().execute(() -> Core.getInstance().getSteeringMotor().rotate(turn));
             }
         }
-        if (!Core.getInstance().getSteeringMotor().isMoving()) { //TODO: Steering to Driving
+        if (!Core.getInstance().getDrivingMotor().isMoving()) { //TODO: Steering to Driving
             if (packet.getAction() == PacketCommandInput.Action.FORWARD) {
                 float value = packet.getExtra() * 100f;
 
@@ -51,10 +58,8 @@ public class CommandInputListener extends PacketListener {
                 int speed = Math.round(speedCalc);
 
                 Core.getInstance().getExecutor().execute(() -> {
-                    Core.getInstance().getSteeringMotor().setSpeed(speed);
-                    Core.getInstance().getSteeringMotor().forward();
-                    Delay.msDelay(20);
-                    Core.getInstance().getSteeringMotor().stop();
+                    Core.getInstance().getDrivingMotor().setSpeed(speed);
+                    Core.getInstance().getDrivingMotor().forward();
                 });
             }
             if (packet.getAction() == PacketCommandInput.Action.BACKWARDS) {
@@ -64,10 +69,8 @@ public class CommandInputListener extends PacketListener {
                 int speed = Math.round(speedCalc);
 
                 Core.getInstance().getExecutor().execute(() -> {
-                    Core.getInstance().getSteeringMotor().setSpeed(speed);
-                    Core.getInstance().getSteeringMotor().backward();
-                    Delay.msDelay(20);
-                    Core.getInstance().getSteeringMotor().stop();
+                    Core.getInstance().getDrivingMotor().setSpeed(speed);
+                    Core.getInstance().getDrivingMotor().backward();
                 });
             }
         }
