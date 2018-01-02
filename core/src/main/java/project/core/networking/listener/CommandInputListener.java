@@ -9,8 +9,14 @@ import project.protocol.packets.ev3.PacketCommandInput;
 
 public class CommandInputListener extends PacketListener {
 
-    private static final float TURN_RATIO = 38f / 100f;
-    private static final float SPEED_RATIO = 740f / 100f;
+    private static final float TURN_RATIO = 20f / 100f;
+    private static final float SPEED_RATIO = 1240f / 100f;
+
+    private int currentAngle;
+
+    public CommandInputListener() {
+        currentAngle = 0;
+    }
 
     @PacketHandler
     public void onCommand(ChannelHandlerContext ctx, PacketCommandInput packet) {
@@ -25,54 +31,62 @@ public class CommandInputListener extends PacketListener {
             return;
         }
 
-        if (!Core.getInstance().getSteeringMotor().isMoving()) {
-            if (packet.getAction() == PacketCommandInput.Action.LEFT) {
+        if (packet.getAction() == PacketCommandInput.Action.LEFT) {
+
+            Core.getInstance().getExecutor().execute(() -> {
                 float value = packet.getExtra() * 100f;
 
                 float turnDegree = TURN_RATIO * value;
 
-                int turn = Math.round(turnDegree) * (-1);
+                int turn = Math.round(turnDegree);
 
-                float position = Core.getInstance().getSteeringMotor().getPosition();
-                System.out.println("Pos:" + position + " / Turn: " + turn);
-
-                Core.getInstance().getExecutor().execute(() -> Core.getInstance().getSteeringMotor().rotate(turn));
-            }
-            if (packet.getAction() == PacketCommandInput.Action.RIGHT) {
+                if ((currentAngle - turn) < -38) {
+                    turn = -38 + currentAngle;
+                } else {
+                    turn *= -1;
+                }
+                currentAngle += turn;
+                System.out.println(currentAngle);
+                Core.getInstance().getSteeringMotor().rotate(turn);
+            });
+        }
+        if (packet.getAction() == PacketCommandInput.Action.RIGHT) {
+            Core.getInstance().getExecutor().execute(() -> {
                 float value = packet.getExtra() * 100f;
 
                 float turnDegree = TURN_RATIO * value;
                 int turn = Math.round(turnDegree);
 
-                float position = Core.getInstance().getSteeringMotor().getPosition();
-                System.out.println("Pos:" + position + " / Turn: " + turn);
+                if ((currentAngle + turn) > 38) {
+                    turn = 38 - currentAngle;
+                }
+                currentAngle += turn;
+                System.out.println(currentAngle);
+                Core.getInstance().getSteeringMotor().rotate(turn);
+            });
 
-                Core.getInstance().getExecutor().execute(() -> Core.getInstance().getSteeringMotor().rotate(turn));
-            }
         }
-        if (!Core.getInstance().getDrivingMotor().isMoving()) { //TODO: Steering to Driving
-            if (packet.getAction() == PacketCommandInput.Action.FORWARD) {
-                float value = packet.getExtra() * 100f;
+        if (packet.getAction() == PacketCommandInput.Action.FORWARD) {
+            float value = packet.getExtra() * 100f;
 
-                float speedCalc = SPEED_RATIO * value;
-                int speed = Math.round(speedCalc);
+            float speedCalc = SPEED_RATIO * value;
+            int speed = Math.round(speedCalc);
 
-                Core.getInstance().getExecutor().execute(() -> {
-                    Core.getInstance().getDrivingMotor().setSpeed(speed);
-                    Core.getInstance().getDrivingMotor().forward();
-                });
-            }
-            if (packet.getAction() == PacketCommandInput.Action.BACKWARDS) {
-                float value = packet.getExtra() * 100f;
+            Core.getInstance().getExecutor().execute(() -> {
+                Core.getInstance().getDrivingMotor().setSpeed(speed);
+                Core.getInstance().getDrivingMotor().backward();
+            });
+        }
+        if (packet.getAction() == PacketCommandInput.Action.BACKWARDS) {
+            float value = packet.getExtra() * 100f;
 
-                float speedCalc = SPEED_RATIO * value;
-                int speed = Math.round(speedCalc);
+            float speedCalc = SPEED_RATIO * value;
+            int speed = Math.round(speedCalc);
 
-                Core.getInstance().getExecutor().execute(() -> {
-                    Core.getInstance().getDrivingMotor().setSpeed(speed);
-                    Core.getInstance().getDrivingMotor().backward();
-                });
-            }
+            Core.getInstance().getExecutor().execute(() -> {
+                Core.getInstance().getDrivingMotor().setSpeed(speed);
+                Core.getInstance().getDrivingMotor().forward();
+            });
         }
     }
 

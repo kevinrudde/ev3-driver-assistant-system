@@ -1,6 +1,5 @@
 package project.core;
 
-import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
 import ev3dev.actuators.lego.motors.EV3MediumRegulatedMotor;
 import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
@@ -8,7 +7,6 @@ import lombok.Getter;
 import project.core.handler.KeyHandler;
 import project.core.networking.Client;
 import project.core.utilities.LCDWriter;
-import project.core.utilities.SteeringPilot;
 
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -42,9 +40,6 @@ public class Core {
         instance = this;
         this.running = true;
 
-        this.client = new Client();
-        client.initialize();
-
         this.keyHandler = new KeyHandler();
         keyHandler.setName("KeyHandler");
         keyHandler.start();
@@ -52,9 +47,12 @@ public class Core {
         this.executor = Executors.newCachedThreadPool();
 
         this.steeringMotor = new EV3MediumRegulatedMotor(MotorPort.A);
-        steeringMotor.setSpeed(25);
+        steeringMotor.setSpeed(400);
         this.drivingMotor = new EV3MediumRegulatedMotor(MotorPort.B);
         drivingMotor.setSpeed(200);
+
+        this.client = new Client();
+        client.initialize();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             this.steeringMotor.stop();

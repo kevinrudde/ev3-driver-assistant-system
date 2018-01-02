@@ -68,6 +68,7 @@ public class CoreBootstrap {
                         .group(PipelineUtility.getEventLoopGroup(0))
                         .channel(PipelineUtility.getSocketChannelClass())
                         .option(ChannelOption.CONNECT_TIMEOUT_MILLIS, 8000)
+                        .option(ChannelOption.TCP_NODELAY, true)
                         .handler(new ChannelInitializer<SocketChannel>() {
 
                             protected void initChannel(SocketChannel socketChannel) throws Exception {
@@ -132,6 +133,8 @@ public class CoreBootstrap {
 
                         })
                         .option(ChannelOption.TCP_NODELAY, true)
+                        .option(ChannelOption.SO_SNDBUF, 64 * 1024)
+                        .childOption(ChannelOption.SO_RCVBUF, 64 * 1024)
                         .childOption(ChannelOption.SO_KEEPALIVE, true);
 
                 // Binding to given port

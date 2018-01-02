@@ -11,6 +11,6 @@ public class LoginSuccessfulListener extends PacketListener {
     @PacketHandler
     public void onLoginSuccess(ChannelHandlerContext ctx, PacketLoginSuccessful packet) {
         Sound sound = Sound.getInstance();
-        sound.twoBeeps();
+        sound.beep();
     }
 }

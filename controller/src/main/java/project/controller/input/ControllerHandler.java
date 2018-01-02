@@ -13,14 +13,16 @@ public class ControllerHandler extends Thread {
 
     private ControllerManager controllers;
 
-    private boolean drivingStop;
+    private boolean forwardStop;
+    private boolean backwardStop;
     private boolean steeringStop;
 
     public ControllerHandler() {
         this.controllers = new ControllerManager();
         controllers.initSDLGamepad();
 
-        this.drivingStop = true;
+        this.forwardStop = true;
+        this.backwardStop = true;
         this.steeringStop = true;
     }
 
@@ -34,37 +36,43 @@ public class ControllerHandler extends Thread {
                 continue;
             }
 
-            if (state.rightTrigger == 0 && drivingStop) {
-                drivingStop = false;
+            if (state.rightTrigger == 0 && forwardStop) {
+                forwardStop = false;
                 packet = new PacketCommandInput(PacketCommandInput.Action.DRIVING_STOP, 39);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
 
-            } else if (state.rightTrigger >= 0.2) {
+            }
+            if (state.rightTrigger >= 0.2) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.FORWARD, state.rightTrigger);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-                drivingStop = true;
+                forwardStop = true;
 
-            } else if (state.leftTrigger == 0 && drivingStop) {
-                drivingStop = false;
+            }
+            if (state.leftTrigger == 0 && backwardStop) {
+                backwardStop = false;
                 packet = new PacketCommandInput(PacketCommandInput.Action.DRIVING_STOP, 49);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
 
-            } else if (state.leftTrigger >= 0.2) {
+            }
+            if (state.leftTrigger >= 0.2) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.BACKWARDS, state.leftTrigger);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
-                drivingStop = true;
+                backwardStop = true;
 
-            } else if ((state.leftStickX > -0.35 || state.leftStickX < 0.35) && steeringStop) {
+            }
+            if ((state.leftStickX > -0.30 || state.leftStickX < 0.30) && steeringStop) {
                 steeringStop = false;
                 packet = new PacketCommandInput(PacketCommandInput.Action.STEERING_STOP, 59);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
 
-            } else if (state.leftStickX >= 0.35) {
+            }
+            if (state.leftStickX >= 0.35) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.RIGHT, state.leftStickX);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
                 steeringStop = true;
 
-            } else if (state.leftStickX <= -0.35) {
+            }
+            if (state.leftStickX <= -0.35) {
                 float extra = state.leftStickX * (-1);
                 if (extra > 1) extra = 1;
 
@@ -72,7 +80,8 @@ public class ControllerHandler extends Thread {
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
                 steeringStop = true;
 
-            } else if (state.rb) {
+            }
+            if (state.rb) {
                 packet = new PacketSoundBeep();
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
             }
