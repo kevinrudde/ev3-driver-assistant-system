@@ -1,8 +1,7 @@
-package project.core.networking;
+package project.debugger.networking;
 
 import io.netty.bootstrap.Bootstrap;
 import lombok.Getter;
-import project.core.networking.listener.*;
 import project.protocol.CoreBootstrap;
 import project.protocol.packets.general.PacketLogin;
 
@@ -13,16 +12,10 @@ public class Client {
 
     public void initialize() {
         CoreBootstrap.registerListeners(
-                new DisconnectListener(),
-                new SoundBeepListener(),
-                new LoginSuccessfulListener(),
-                new CommandInputListener(),
-                new DebugReloadListener()
+                new DebugListener()
         );
 
-        connect("10.3.141.140", 8081, "ev3"); // Home
-        //connect("192.168.2.113", 8081, "ev3"); // Raspberry Router
-        //connect("127.0.0.1", 8081, "ev3"); // Localhost
+        connect("127.0.0.1", 8081, "ev3"); // Localhost
     }
 
     private void connect(String ip, int port, String password) {

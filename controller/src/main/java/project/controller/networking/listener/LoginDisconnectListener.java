@@ -2,6 +2,7 @@ package project.controller.networking.listener;
 
 import io.netty.channel.ChannelHandlerContext;
 import project.controller.Controller;
+import project.controller.gui.GUI;
 import project.protocol.CoreBootstrap;
 import project.protocol.listener.PacketHandler;
 import project.protocol.listener.PacketListener;
@@ -11,10 +12,10 @@ import project.protocol.packets.general.PacketLoginSuccessful;
 
 import java.net.InetSocketAddress;
 
-public class LoginListener extends PacketListener {
+public class LoginDisconnectListener extends PacketListener {
 
     @PacketHandler
-    public static void onLogin(ChannelHandlerContext ctx, PacketLogin packet) {
+    public void onLogin(ChannelHandlerContext ctx, PacketLogin packet) {
         if (CoreBootstrap.getChannels().containsKey(ctx.channel()))
             return;
 
@@ -29,8 +30,15 @@ public class LoginListener extends PacketListener {
         ctx.channel().writeAndFlush(new PacketLoginSuccessful());
 
         if (!CoreBootstrap.isClient()) {
-            CoreBootstrap.getChannels().put(packet.getClientType(), ctx.channel());
+            CoreBootstrap.getChannels().put(ctx.channel(), packet.getClientType());
+            GUI.getInstance().connected(packet.getClientType());
         }
+    }
+
+    @PacketHandler
+    public void onDisconnect(ChannelHandlerContext ctx, PacketDisconnect packet) {
+        GUI.getInstance().disconnected(packet.getClientType());
+
     }
 
 }

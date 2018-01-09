@@ -3,14 +3,15 @@ package project.core.networking.listener;
 import io.netty.channel.ChannelHandlerContext;
 import lejos.utility.Delay;
 import project.core.Core;
+import project.core.reference.Reference;
 import project.protocol.listener.PacketHandler;
 import project.protocol.listener.PacketListener;
 import project.protocol.packets.ev3.PacketCommandInput;
 
 public class CommandInputListener extends PacketListener {
 
-    private static final float TURN_RATIO = 20f / 100f;
-    private static final float SPEED_RATIO = 1240f / 100f;
+    private static final float TURN_RATIO = Reference.STEERING_SPEED / 100f;
+    private static final float SPEED_RATIO = Reference.DRIVING_SPEED / 100f;
 
     private int currentAngle;
 

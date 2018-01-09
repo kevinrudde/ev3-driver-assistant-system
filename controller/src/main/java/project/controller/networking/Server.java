@@ -1,7 +1,7 @@
 package project.controller.networking;
 
 import io.netty.bootstrap.ServerBootstrap;
-import project.controller.networking.listener.LoginListener;
+import project.controller.networking.listener.LoginDisconnectListener;
 import project.protocol.CoreBootstrap;
 
 public class Server {
@@ -22,7 +22,7 @@ public class Server {
     public void initialize() {
 
         CoreBootstrap.registerListeners(
-                new LoginListener()
+                new LoginDisconnectListener()
         );
 
         connect();

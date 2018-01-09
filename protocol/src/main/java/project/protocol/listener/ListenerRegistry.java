@@ -30,7 +30,7 @@ public class ListenerRegistry {
             try {
                 method.invoke(listener, ctx, packet);
             } catch (IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                System.err.println(ex.getMessage());
+                ex.printStackTrace();
             }
         });
     }

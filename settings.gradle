@@ -21,3 +21,5 @@ include 'protocol'
 include 'core'
 include 'parking'
 include 'controller'
+include 'debugger'
+

@@ -49,7 +49,14 @@ public class PacketHandler extends SimpleChannelInboundHandler<Packet> {
 
         if (!CoreBootstrap.isClient()) {
             System.out.println(Utility.getHostString(ctx.channel().remoteAddress()) + " disconnected!");
+
+            PacketLogin.ClientType clientType = CoreBootstrap.getChannels().get(ctx.channel());
+
+
             CoreBootstrap.getChannels().remove(ctx.channel());
+
+            PacketDisconnect packet = new PacketDisconnect(clientType);
+            CoreBootstrap.getListenerRegistry().callEvent(ctx, packet); // "Call" DisconnectPacket to the server
         } else {
             System.out.println("Disconnected from server!");
         }

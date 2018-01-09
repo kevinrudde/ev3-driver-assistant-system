@@ -2,6 +2,8 @@ package project.protocol;
 
 import project.protocol.packets.ev3.PacketCommandInput;
 import project.protocol.packets.ev3.PacketSoundBeep;
+import project.protocol.packets.ev3.PacketUpdateInformation;
+import project.protocol.packets.general.PacketDebugReload;
 import project.protocol.packets.general.PacketDisconnect;
 import project.protocol.packets.general.PacketLogin;
 import project.protocol.packets.general.PacketLoginSuccessful;
@@ -12,7 +14,9 @@ public enum Protocol {
     LOGIN_SUCCESSFUL(0x02, PacketLoginSuccessful.class),
     DISCONNECT(0x03, PacketDisconnect.class),
     SOUND_BEEP(0x04, PacketSoundBeep.class),
-    COMMAND_INPUT(0x05, PacketCommandInput.class)
+    COMMAND_INPUT(0x05, PacketCommandInput.class),
+    DEBUG_RELOAD(0x06, PacketDebugReload.class),
+    UPDATE_INFORMATION(0x07, PacketUpdateInformation.class)
     ;
 
     private int packetId;

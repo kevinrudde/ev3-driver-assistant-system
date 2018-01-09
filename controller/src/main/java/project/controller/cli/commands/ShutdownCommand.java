@@ -15,7 +15,7 @@ public class ShutdownCommand extends Command {
     public boolean execute(String[] args) {
         System.out.println("Shutting down...");
 
-        for (Channel channel : CoreBootstrap.getChannels().values()) {
+        for (Channel channel : CoreBootstrap.getChannels().keySet()) {
             channel.writeAndFlush(new PacketDisconnect("Shutdown"));
         }
 

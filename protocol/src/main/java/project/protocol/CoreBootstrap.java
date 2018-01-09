@@ -20,8 +20,8 @@ import java.util.function.Consumer;
 public class CoreBootstrap {
 
     private static ListenerRegistry listenerRegistry = new ListenerRegistry();
-    private static Map<PacketLogin.ClientType, Channel> channels = new HashMap<>();
-    
+    private static Map<Channel, PacketLogin.ClientType> channels = new HashMap<>();
+
     private static boolean client;
     private static PacketHandler clientHandler;
 
@@ -187,7 +187,10 @@ public class CoreBootstrap {
     }
     
     public static Channel getClient(PacketLogin.ClientType clientType) {
-        return channels.get(clientType);
+        for (Channel channel : channels.keySet()) {
+            if (channels.get(channel) == clientType) return channel;
+        }
+        return null;
     }
 
     public static boolean sendPacket(Packet packet, PacketLogin.ClientType clientType) {
@@ -204,7 +207,7 @@ public class CoreBootstrap {
         return listenerRegistry;
     }
 
-    public static Map<PacketLogin.ClientType, Channel> getChannels() {
+    public static Map<Channel, PacketLogin.ClientType> getChannels() { // TODO: switched
         return channels;
     }
 
