@@ -196,6 +196,7 @@ public class CoreBootstrap {
     public static boolean sendPacket(Packet packet, PacketLogin.ClientType clientType) {
         Channel client = getClient(clientType);
         if (client == null) {
+            System.out.println(clientType.toString() + " not found!");
             return false;
         } else {
             client.writeAndFlush(packet);

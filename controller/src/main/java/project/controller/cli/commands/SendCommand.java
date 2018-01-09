@@ -1,6 +1,7 @@
 package project.controller.cli.commands;
 
 import project.controller.cli.command.Command;
+import project.controller.gui.GUI;
 import project.protocol.CoreBootstrap;
 import project.protocol.packets.ev3.PacketSoundBeep;
 import project.protocol.packets.general.PacketLogin;

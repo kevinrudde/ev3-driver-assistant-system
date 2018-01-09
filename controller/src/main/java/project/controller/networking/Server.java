@@ -2,6 +2,7 @@ package project.controller.networking;
 
 import io.netty.bootstrap.ServerBootstrap;
 import project.controller.networking.listener.LoginDisconnectListener;
+import project.controller.networking.listener.UltraSonicListener;
 import project.protocol.CoreBootstrap;
 
 public class Server {
@@ -22,13 +23,14 @@ public class Server {
     public void initialize() {
 
         CoreBootstrap.registerListeners(
-                new LoginDisconnectListener()
+                new LoginDisconnectListener(),
+                new UltraSonicListener()
         );
 
-        connect();
+        startServer();
     }
 
-    private void connect() {
+    private void startServer() {
         CoreBootstrap.runServerBootstrap(8081, serverBootstrap -> {
             if (serverBootstrap == null) {
                 System.out.println("Failed listening on port 8081!");

@@ -27,9 +27,19 @@
                         <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eeeeee" height="103.0" stroke="BLACK" strokeType="INSIDE" width="130.0" />
                         <Label layoutX="22.0" layoutY="6.0" text="Geschwindigkeit" />
                         <Label fx:id="speedLabel" layoutX="46.0" layoutY="43.0" text="0 km/h" />
+                        <CheckBox fx:id="convert" layoutX="40.0" layoutY="72.0" mnemonicParsing="false" onAction="#onConvert" text="km/h" />
                      </children>
                   </Group>
-                  <CheckBox fx:id="convert" layoutX="74.0" layoutY="158.0" mnemonicParsing="false" onAction="#onConvert" text="km/h" />
+                  <Group layoutX="198.0" layoutY="14.0">
+                     <children>
+                        <Rectangle arcHeight="5.0" arcWidth="5.0" fill="#eeeeee" height="196.0" stroke="BLACK" strokeType="INSIDE" width="205.0" />
+                        <Label layoutX="58.0" layoutY="17.0" text="Ultraschall Daten" />
+                        <Label fx:id="frontSample" layoutX="89.0" layoutY="52.0" text="front" />
+                        <Label fx:id="backSample" layoutX="89.0" layoutY="133.0" text="back" />
+                        <Label fx:id="rightSample" layoutX="148.0" layoutY="90.0" text="right" />
+                        <Label fx:id="leftSample" layoutX="40.0" layoutY="90.0" text="left" />
+                     </children>
+                  </Group>
                </children></AnchorPane>
       </content>
     </Tab>

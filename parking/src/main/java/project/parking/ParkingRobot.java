@@ -1,13 +1,13 @@
 package project.parking;
 
-import ev3dev.actuators.lego.motors.EV3LargeRegulatedMotor;
-import ev3dev.actuators.lego.motors.EV3MediumRegulatedMotor;
-import ev3dev.actuators.lego.motors.Motor;
-import lejos.hardware.port.MotorPort;
+import lejos.utility.Delay;
 import project.parking.networking.Client;
+import project.parking.sensors.UltraSonic;
 
 public class ParkingRobot {
 
+    private KeyHandler keyHandler;
+    private UltraSonic ultraSonic;
     private Client client;
 
     public static void main(final String[] args) {
@@ -15,20 +15,17 @@ public class ParkingRobot {
     }
 
     private ParkingRobot() {
-        /*this.client = new Client();
+        this.keyHandler = new KeyHandler();
+        keyHandler.setName("KeyHandler");
+        keyHandler.start();
+
+        this.client = new Client();
         client.connect("127.0.0.1", 8081, "ev3");
-        */
-        new KeyHandler().start();
 
-        EV3LargeRegulatedMotor motor = new EV3LargeRegulatedMotor(MotorPort.B);
-        EV3MediumRegulatedMotor steering = new EV3MediumRegulatedMotor(MotorPort.A);
+        Delay.msDelay(250);
 
-        Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            motor.stop();
-            steering.stop();
-        }));
-
-        steering.forward();
-
+        this.ultraSonic = new UltraSonic();
+        ultraSonic.setName("UltraSonic");
+        ultraSonic.start();
     }
 }

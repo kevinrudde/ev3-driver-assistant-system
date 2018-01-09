@@ -1,8 +1,6 @@
 package project.protocol;
 
-import project.protocol.packets.ev3.PacketCommandInput;
-import project.protocol.packets.ev3.PacketSoundBeep;
-import project.protocol.packets.ev3.PacketUpdateInformation;
+import project.protocol.packets.ev3.*;
 import project.protocol.packets.general.PacketDebugReload;
 import project.protocol.packets.general.PacketDisconnect;
 import project.protocol.packets.general.PacketLogin;
@@ -16,7 +14,9 @@ public enum Protocol {
     SOUND_BEEP(0x04, PacketSoundBeep.class),
     COMMAND_INPUT(0x05, PacketCommandInput.class),
     DEBUG_RELOAD(0x06, PacketDebugReload.class),
-    UPDATE_INFORMATION(0x07, PacketUpdateInformation.class)
+    UPDATE_INFORMATION(0x07, PacketUpdateInformation.class),
+    SENSOR_INFORMATION(0x08, PacketSensorInformation.class),
+    ULTRA_SONIC_SAMPLES(0x09, PacketUltraSonicSamples.class)
     ;
 
     private int packetId;

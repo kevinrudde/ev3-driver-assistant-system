@@ -1,6 +1,7 @@
 package project.controller.gui;
 
 import javafx.application.Application;
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -17,7 +18,6 @@ import project.protocol.packets.general.PacketDebugReload;
 import project.protocol.packets.general.PacketLogin;
 
 import java.io.IOException;
-import java.util.Objects;
 
 public class GUI extends Application {
 
@@ -33,6 +33,14 @@ public class GUI extends Application {
     TextField steeringSpeed;
     @FXML
     CheckBox convert;
+    @FXML
+    Label rightSample;
+    @FXML
+    Label leftSample;
+    @FXML
+    Label frontSample;
+    @FXML
+    Label backSample;
 
     @Getter
     private static GUI instance;
@@ -62,7 +70,7 @@ public class GUI extends Application {
 
     @FXML
     public void onConvert() {
-        updateInformation(Double.parseDouble(this.speedLabel.getText().replace(" km/h", "").replace(" m/s", "")));
+        updateSpeed(Double.parseDouble(this.speedLabel.getText().replace(" km/h", "").replace(" m/s", "")));
     }
 
     @FXML
@@ -87,7 +95,7 @@ public class GUI extends Application {
         }
     }
 
-    public void updateInformation(double speed) {
+    private void updateSpeed(double speed) {
         if (convert.isSelected()) {
             speed *= 3.6;
             this.speedLabel.setText(speed + " km/h");
@@ -95,6 +103,15 @@ public class GUI extends Application {
             speed /= 3.6;
             this.speedLabel.setText(speed + " m/s");
         }
+    }
+
+    public void updateUltraSonicSamples(float rightSample, float leftSample, float frontSample, float backSample) {
+        Platform.runLater(() -> {
+            this.rightSample.setText(rightSample * 100 + " cm");
+            this.leftSample.setText(leftSample * 100 + " cm");
+            this.frontSample.setText(frontSample * 100 + " cm");
+            this.backSample.setText(backSample * 100 + " cm");
+        });
     }
 
     public void connected(PacketLogin.ClientType clientType) {
