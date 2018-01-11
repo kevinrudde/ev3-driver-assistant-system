@@ -20,9 +20,6 @@ public class ParkingRobot {
         keyHandler.start();
 
         this.client = new Client();
-        client.connect("127.0.0.1", 8081, "ev3");
-
-        Delay.msDelay(250);
 
         this.ultraSonic = new UltraSonic();
         ultraSonic.setName("UltraSonic");

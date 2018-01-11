@@ -16,7 +16,8 @@ public enum Protocol {
     DEBUG_RELOAD(0x06, PacketDebugReload.class),
     UPDATE_INFORMATION(0x07, PacketUpdateInformation.class),
     SENSOR_INFORMATION(0x08, PacketSensorInformation.class),
-    ULTRA_SONIC_SAMPLES(0x09, PacketUltraSonicSamples.class)
+    ULTRA_SONIC_SAMPLES(0x09, PacketUltraSonicSamples.class),
+    EMERGENCY_STOP(0x10, PacketEmergencyStop.class)
     ;
 
     private int packetId;

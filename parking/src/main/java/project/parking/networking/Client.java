@@ -23,19 +23,21 @@ public class Client {
         CoreBootstrap.registerListeners(
                 new DisconnectListener()
         );
+
+        connect("10.3.141.140", 8081, "ev3"); // Home
     }
 
-    public void connect(String ip, int port, String password) {
-        CoreBootstrap.runClientBootstrap(ip, port, password, PacketLogin.ClientType.PARKING, bootstrap -> {
-            if (bootstrap == null) {
-                System.err.println("Failed connecting to 127.0.0.1:8081!");
+    private void connect(String ip, int port, String password) {
+        CoreBootstrap.runClientBootstrap(ip, port, password, PacketLogin.ClientType.PARKING, bootstrapConsumer -> {
+            if (bootstrapConsumer == null) {
+                System.err.println("Failed to connected to " + ip + ":" + port);
                 System.exit(0);
                 return;
             }
 
-            Client.this.bootstrap = bootstrap;
+            this.bootstrap = bootstrapConsumer;
 
-            System.out.println("Connected to 127.0.0.1:8081!");
+            System.out.println("Connected to " + ip + ":" + port);
         });
     }
 

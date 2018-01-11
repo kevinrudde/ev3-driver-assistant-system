@@ -107,10 +107,10 @@ public class GUI extends Application {
 
     public void updateUltraSonicSamples(float rightSample, float leftSample, float frontSample, float backSample) {
         Platform.runLater(() -> {
-            this.rightSample.setText(rightSample * 100 + " cm");
-            this.leftSample.setText(leftSample * 100 + " cm");
-            this.frontSample.setText(frontSample * 100 + " cm");
-            this.backSample.setText(backSample * 100 + " cm");
+            this.rightSample.setText(rightSample + " cm");
+            this.leftSample.setText(leftSample + " cm");
+            this.frontSample.setText(frontSample + " cm");
+            this.backSample.setText(backSample + " cm");
         });
     }
 

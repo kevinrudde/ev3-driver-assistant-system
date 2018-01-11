@@ -1,10 +1,14 @@
 package project.controller.networking.listener;
 
+import io.netty.channel.Channel;
 import io.netty.channel.ChannelHandlerContext;
 import project.controller.gui.GUI;
+import project.protocol.CoreBootstrap;
 import project.protocol.listener.PacketHandler;
 import project.protocol.listener.PacketListener;
+import project.protocol.packets.ev3.PacketEmergencyStop;
 import project.protocol.packets.ev3.PacketUltraSonicSamples;
+import project.protocol.packets.general.PacketLogin;
 
 public class UltraSonicListener extends PacketListener {
 
@@ -15,9 +19,12 @@ public class UltraSonicListener extends PacketListener {
         float frontSample = packet.getFrontSample();
         float backSample = packet.getBackSample();
 
-        System.out.println("UltraSonicSamples");
-
         GUI.getInstance().updateUltraSonicSamples(rightSample, leftSample, frontSample, backSample);
     }
 
+
+    @PacketHandler
+    public void onEmergencyStop(ChannelHandlerContext ctx, PacketEmergencyStop packet) {
+        CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
+    }
 }

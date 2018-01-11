@@ -7,13 +7,13 @@ import project.core.reference.Reference;
 import project.protocol.listener.PacketHandler;
 import project.protocol.listener.PacketListener;
 import project.protocol.packets.ev3.PacketCommandInput;
+import project.protocol.packets.ev3.PacketEmergencyStop;
 
 public class CommandInputListener extends PacketListener {
 
-    private static final float TURN_RATIO = Reference.STEERING_SPEED / 100f;
-    private static final float SPEED_RATIO = Reference.DRIVING_SPEED / 100f;
-
     private int currentAngle;
+    private boolean forward;
+    private boolean emergencyStop;
 
     public CommandInputListener() {
         currentAngle = 0;
@@ -21,10 +21,21 @@ public class CommandInputListener extends PacketListener {
 
     @PacketHandler
     public void onCommand(ChannelHandlerContext ctx, PacketCommandInput packet) {
+        float TURN_RATIO = Reference.STEERING_SPEED / 100f;
+        float SPEED_RATIO = Reference.DRIVING_SPEED / 100f;
+
         System.out.println("Action: " + packet.getAction().toString() + " / " + packet.getExtra() + " moving: " + Core.getInstance().getSteeringMotor().isMoving());
 
         if (packet.getAction() == PacketCommandInput.Action.DRIVING_STOP) {
-            Core.getInstance().getDrivingMotor().stop();
+            Core.getInstance().getExecutor().execute(() -> {
+                if (forward) {
+                    Core.getInstance().getDrivingMotor().forward();
+                } else {
+                    Core.getInstance().getDrivingMotor().backward();
+                }
+
+                Core.getInstance().getDrivingMotor().stop();
+            });
             return;
         }
         if (packet.getAction() == PacketCommandInput.Action.STEERING_STOP) {
@@ -42,7 +53,7 @@ public class CommandInputListener extends PacketListener {
                 int turn = Math.round(turnDegree);
 
                 if ((currentAngle - turn) < -38) {
-                    turn = -38 + currentAngle;
+                    turn = -38 - currentAngle;
                 } else {
                     turn *= -1;
                 }
@@ -68,6 +79,10 @@ public class CommandInputListener extends PacketListener {
 
         }
         if (packet.getAction() == PacketCommandInput.Action.FORWARD) {
+
+            if (emergencyStop) return;
+
+            this.forward = true;
             float value = packet.getExtra() * 100f;
 
             float speedCalc = SPEED_RATIO * value;
@@ -79,6 +94,7 @@ public class CommandInputListener extends PacketListener {
             });
         }
         if (packet.getAction() == PacketCommandInput.Action.BACKWARDS) {
+            this.forward = false;
             float value = packet.getExtra() * 100f;
 
             float speedCalc = SPEED_RATIO * value;
@@ -89,6 +105,15 @@ public class CommandInputListener extends PacketListener {
                 Core.getInstance().getDrivingMotor().forward();
             });
         }
+    }
+
+    @PacketHandler
+    public void onEmergencyStop(ChannelHandlerContext ctx, PacketEmergencyStop packet) {
+        emergencyStop = true;
+        Core.getInstance().getDrivingMotor().stop();
+
+        Delay.msDelay(5000);
+        emergencyStop = false;
     }
 
 }

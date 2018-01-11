@@ -1,11 +1,13 @@
 package project.parking.sensors;
 
+import ev3dev.actuators.Sound;
 import ev3dev.sensors.ev3.EV3UltrasonicSensor;
 import lejos.hardware.port.SensorPort;
 import lejos.robotics.SampleProvider;
 import lejos.utility.Delay;
 import project.protocol.CoreBootstrap;
 import project.protocol.Packet;
+import project.protocol.packets.ev3.PacketEmergencyStop;
 import project.protocol.packets.ev3.PacketUltraSonicSamples;
 import project.protocol.packets.general.PacketLogin;
 
@@ -22,6 +24,9 @@ public class UltraSonic extends Thread {
     @Override
     public void run() {
 
+        Delay.msDelay(20000);
+        System.out.println("UltraSonic start");
+
         float rightSample;
         float leftSample;
         float frontSample;
@@ -29,15 +34,30 @@ public class UltraSonic extends Thread {
 
         while (true) {
 
-            Delay.msDelay(500);
+            Delay.msDelay(150);
 
-            rightSample = getSample(usRight);
-            leftSample = getSample(usLeft);
-            frontSample = getSample(usFront);
-            backSample = getSample(usBack);
+            if (CoreBootstrap.getClientHandler() != null) {
 
-            PacketUltraSonicSamples packet = new PacketUltraSonicSamples(rightSample, leftSample, frontSample, backSample);
-            CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.SERVER);
+                rightSample = getSample(usRight);
+                leftSample = getSample(usLeft);
+                frontSample = getSample(usFront);
+                backSample = getSample(usBack);
+
+                if (frontSample < 12) {
+                    Sound.getInstance().beep();
+                }
+                if (frontSample < 10) {
+                    Sound.getInstance().twoBeeps();
+                }
+                if (frontSample < 5) {
+                    PacketEmergencyStop packet = new PacketEmergencyStop();
+                    CoreBootstrap.getClientHandler().sendPacket(packet);
+                }
+
+                PacketUltraSonicSamples packet = new PacketUltraSonicSamples(rightSample, leftSample, frontSample, backSample);
+                CoreBootstrap.getClientHandler().sendPacket(packet);
+            }
+
         }
     }
 
