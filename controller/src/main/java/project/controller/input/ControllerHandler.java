@@ -60,12 +60,7 @@ public class ControllerHandler extends Thread {
                 backwardStop = true;
 
             }
-            if ((state.leftStickX > -0.30 || state.leftStickX < 0.30) && steeringStop) {
-                steeringStop = false;
-                packet = new PacketCommandInput(PacketCommandInput.Action.STEERING_STOP, 59);
-                CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
 
-            }
             if (state.leftStickX >= 0.35) {
                 packet = new PacketCommandInput(PacketCommandInput.Action.RIGHT, state.leftStickX);
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
@@ -81,13 +76,19 @@ public class ControllerHandler extends Thread {
                 steeringStop = true;
 
             }
+            if ((state.leftStickX > -0.30 && state.leftStickX < 0.30) && steeringStop) {
+                steeringStop = false;
+                packet = new PacketCommandInput(PacketCommandInput.Action.STEERING_STOP, state.leftStickX);
+                CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
+            }
+
             if (state.rb) {
                 packet = new PacketSoundBeep();
                 CoreBootstrap.sendPacket(packet, PacketLogin.ClientType.CORE);
             }
 
             try {
-                Thread.sleep(400);
+                Thread.sleep(420);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }

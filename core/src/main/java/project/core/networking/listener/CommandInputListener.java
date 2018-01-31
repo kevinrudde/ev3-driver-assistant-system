@@ -15,6 +15,8 @@ public class CommandInputListener extends PacketListener {
     private boolean forward;
     private boolean emergencyStop;
 
+    private final boolean RESET = true; //TODO maybe corrupted
+
     public CommandInputListener() {
         currentAngle = 0;
     }
@@ -39,12 +41,21 @@ public class CommandInputListener extends PacketListener {
             return;
         }
         if (packet.getAction() == PacketCommandInput.Action.STEERING_STOP) {
-            Core.getInstance().getSteeringMotor().stop();
+            Core.getInstance().getExecutor().execute(() -> {
+                Core.getInstance().getSteeringMotor().stop();
+
+                if (RESET) {
+                    int turnValue = currentAngle * -1;
+
+                    Core.getInstance().getSteeringMotor().rotate(turnValue);
+                    currentAngle = 0;
+                    System.out.println("CurrentAngle: " + currentAngle);
+                }
+            });
             return;
         }
 
         if (packet.getAction() == PacketCommandInput.Action.LEFT) {
-
             Core.getInstance().getExecutor().execute(() -> {
                 float value = packet.getExtra() * 100f;
 
@@ -58,7 +69,7 @@ public class CommandInputListener extends PacketListener {
                     turn *= -1;
                 }
                 currentAngle += turn;
-                System.out.println(currentAngle);
+                System.out.println("CurrentAngle: " + currentAngle);
                 Core.getInstance().getSteeringMotor().rotate(turn);
             });
         }
@@ -73,35 +84,34 @@ public class CommandInputListener extends PacketListener {
                     turn = 38 - currentAngle;
                 }
                 currentAngle += turn;
-                System.out.println(currentAngle);
+                System.out.println("CurrentAngle: " + currentAngle);
                 Core.getInstance().getSteeringMotor().rotate(turn);
             });
 
         }
         if (packet.getAction() == PacketCommandInput.Action.FORWARD) {
-
             if (emergencyStop) return;
 
-            this.forward = true;
-            float value = packet.getExtra() * 100f;
-
-            float speedCalc = SPEED_RATIO * value;
-            int speed = Math.round(speedCalc);
-
             Core.getInstance().getExecutor().execute(() -> {
+                this.forward = true;
+                float value = packet.getExtra() * 100f;
+
+                float speedCalc = SPEED_RATIO * value;
+                int speed = Math.round(speedCalc);
                 Core.getInstance().getDrivingMotor().setSpeed(speed);
                 Core.getInstance().getDrivingMotor().backward();
             });
         }
         if (packet.getAction() == PacketCommandInput.Action.BACKWARDS) {
-            this.forward = false;
-            float value = packet.getExtra() * 100f;
-
-            float speedCalc = SPEED_RATIO * value;
-            int speed = Math.round(speedCalc);
-
             Core.getInstance().getExecutor().execute(() -> {
+                this.forward = false;
+                float value = packet.getExtra() * 100f;
+
+                float speedCalc = SPEED_RATIO * value;
+                int speed = Math.round(speedCalc);
+
                 Core.getInstance().getDrivingMotor().setSpeed(speed);
+                Core.getInstance().getDrivingMotor().brake();
                 Core.getInstance().getDrivingMotor().forward();
             });
         }
@@ -109,11 +119,13 @@ public class CommandInputListener extends PacketListener {
 
     @PacketHandler
     public void onEmergencyStop(ChannelHandlerContext ctx, PacketEmergencyStop packet) {
-        emergencyStop = true;
-        Core.getInstance().getDrivingMotor().stop();
+        Core.getInstance().getExecutor().execute(() -> {
+            emergencyStop = true;
+            Core.getInstance().getDrivingMotor().stop();
 
-        Delay.msDelay(5000);
-        emergencyStop = false;
+            Delay.msDelay(5000);
+            emergencyStop = false;
+        });
     }
 
 }

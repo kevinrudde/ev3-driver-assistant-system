@@ -5,6 +5,7 @@ import lejos.hardware.port.MotorPort;
 import lejos.utility.Delay;
 import lombok.Getter;
 import project.core.handler.KeyHandler;
+import project.core.handler.VelocityHandler;
 import project.core.networking.Client;
 import project.core.utilities.LCDWriter;
 
@@ -20,6 +21,7 @@ public class Core {
     /* Handlers */
     private Client client;
     private KeyHandler keyHandler;
+    private VelocityHandler velocityHandler;
 
     @Getter
     private ExecutorService executor;
@@ -47,12 +49,18 @@ public class Core {
         this.executor = Executors.newCachedThreadPool();
 
         this.steeringMotor = new EV3MediumRegulatedMotor(MotorPort.A);
-        steeringMotor.setSpeed(400);
+        steeringMotor.setSpeed(200);
+        //steeringMotor.brake();
         this.drivingMotor = new EV3MediumRegulatedMotor(MotorPort.B);
         drivingMotor.setSpeed(200);
+        drivingMotor.brake();
 
         this.client = new Client();
         client.initialize();
+
+        this.velocityHandler = new VelocityHandler();
+        velocityHandler.setName("Velocity Handler");
+        velocityHandler.start();
 
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
             this.steeringMotor.stop();

@@ -173,11 +173,9 @@ public class CoreBootstrap {
         PacketHandler packetHandler = new PacketHandler(socketChannel);
         ChannelPipeline pipeline = socketChannel.pipeline();
 
-        //pipeline.addLast( new LengthFieldBasedFrameDecoder( Integer.MAX_VALUE, 0, 4 ) );
         pipeline.addLast(new PacketLengthSplitter());
         pipeline.addLast(new PacketDecoder());
 
-        //pipeline.addLast( new LengthFieldPrepender( 4 ) );
         pipeline.addLast(new PacketLengthPrepender());
         pipeline.addLast(new PacketEncoder());
 

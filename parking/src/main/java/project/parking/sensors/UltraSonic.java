@@ -34,7 +34,7 @@ public class UltraSonic extends Thread {
 
         while (true) {
 
-            Delay.msDelay(150);
+            Delay.msDelay(135);
 
             if (CoreBootstrap.getClientHandler() != null) {
 
@@ -43,13 +43,10 @@ public class UltraSonic extends Thread {
                 frontSample = getSample(usFront);
                 backSample = getSample(usBack);
 
-                if (frontSample < 12) {
-                    Sound.getInstance().beep();
-                }
-                if (frontSample < 10) {
+                if (frontSample < 28) {
                     Sound.getInstance().twoBeeps();
                 }
-                if (frontSample < 5) {
+                if (frontSample < 25) {
                     PacketEmergencyStop packet = new PacketEmergencyStop();
                     CoreBootstrap.getClientHandler().sendPacket(packet);
                 }

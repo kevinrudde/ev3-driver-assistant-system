@@ -10,7 +10,6 @@ import java.lang.reflect.Method;
 
 public class ListenerRegistry {
 
-    private static ListenerRegistry instance;
     private Table<Class<?>, PacketListener, Method> packetListener = HashBasedTable.create();
 
     public void register(PacketListener listener) {

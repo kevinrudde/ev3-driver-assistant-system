@@ -95,7 +95,7 @@ public class GUI extends Application {
         }
     }
 
-    private void updateSpeed(double speed) {
+    public void updateSpeed(double speed) {
         if (convert.isSelected()) {
             speed *= 3.6;
             this.speedLabel.setText(speed + " km/h");
